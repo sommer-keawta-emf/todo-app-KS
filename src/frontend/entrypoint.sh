@@ -1,7 +1,10 @@
 #!/bin/sh
 echo "Récupération de l'IP publique..."
 PUBLIC_IP=$(curl -s https://api64.ipify.org)
-export API_POINT_URL="http://$PUBLIC_IP:8080/api/tasks"
+
+#export API_POINT_URL="http://$PUBLIC_IP:8080/api/tasks"
+
+export API_POINT_URL="https://aca-qva-fi21-210-keawtasommer.gentleforest-64bb30d6.northeurope.azurecontainerapps.io/api/tasks"
 
 echo "L'IP publique courante est : $PUBLIC_IP"
 

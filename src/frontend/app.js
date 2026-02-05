@@ -1,5 +1,5 @@
 //const apiEndpoint = "https://fa-todo-backend-baqmes.azurewebsites.net/api/tasks";
-const apiEndpoint = "${API_POINT_URL}";
+const apiEndpoint = "https://aca-qva-fi21-210-keawtasommer.gentleforest-64bb30d6.northeurope.azurecontainerapps.io/api/tasks";
 ;
 
 $(document).ready(function () {
