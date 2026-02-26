@@ -1,0 +1,40 @@
+name: Build and save my Docker image to a registry
+
+on:
+  push:
+    branches:
+      - main  # Déclenchement lorsque le code est poussé sur main
+    
+    paths:
+        - 'backend/**'
+
+env:
+  REGISTRY: "acrfi21210.azurecr.io" # Nom du registy
+  IMAGE_NAME: "todo-backend-kso" # Nom de votre image
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+        # Récupérer le code
+        - name: Checkout repository
+          uses: actions/checkout@v3
+  
+        # Se connecter à la registry ACR
+        - name: Log in to ACR
+          uses: azure/docker-login@v1
+          with:
+            login-server: ${{ env.REGISTRY }}
+            username: ${{ secrets.ACR_USERNAME }}
+            password: ${{ secrets.ACR_PASSWORD }}
+  
+        # Build de l'image Docker
+        - name: Build Docker image
+          run: |
+            docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ./backend
+  
+        # Pousser l'image Docker vers le registry
+        - name: Push Docker image
+          run: |
+            docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
