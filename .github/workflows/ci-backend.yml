@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - './src/backend/**'
+        - 'src/backend/**'  # Chemin relatif au dépôt
 
 env:
   REGISTRY: "acrfi21210.azurecr.io"
