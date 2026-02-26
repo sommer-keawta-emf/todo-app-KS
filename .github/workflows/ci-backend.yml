@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-        - 'src/backend/**'  # Chemin relatif au dépôt
+      - 'src/backend/**'  # chemin relatif correct
 
 env:
   REGISTRY: "acrfi21210.azurecr.io"
@@ -16,11 +16,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Récupérer le code
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Se connecter à la registry ACR
       - name: Log in to ACR
         uses: azure/docker-login@v1
         with:
@@ -28,14 +26,12 @@ jobs:
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
-      # Build de l'image Docker
       - name: Build Docker image
         run: |
           echo "Building image with SHA tag and latest tag..."
           docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
-                       -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest ./backend
+                       -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest ./src/backend
 
-      # Pousser l'image Docker vers le registry
       - name: Push Docker image
         run: |
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
