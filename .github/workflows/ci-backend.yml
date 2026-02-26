@@ -3,38 +3,54 @@ name: Build and save my Docker image to a registry
 on:
   push:
     branches:
-      - main  # Déclenchement lorsque le code est poussé sur main
-    
+      - main
     paths:
-        - 'backend/**'
+      - 'backend/**'
 
 env:
-  REGISTRY: "acrfi21210.azurecr.io" # Nom du registy
-  IMAGE_NAME: "todo-backend-kso" # Nom de votre image
+  REGISTRY: "acrfi21210.azurecr.io"
+  IMAGE_NAME: "todo-backend-kso"
 
 jobs:
+  # Job de test pour vérifier la construction de l'image
+  test-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Docker image locally (test)
+        run: |
+          echo "Simulating Docker build..."
+          docker build -t test-image:latest ./backend
+
+      - name: Verify Docker image exists
+        run: |
+          echo "Listing local Docker images..."
+          docker images | grep test-image
+
+  # Job principal : build + push sur ACR
   build-and-deploy:
     runs-on: ubuntu-latest
-
+    needs: test-docker  # S'assure que le test passe avant de builder/pusher
     steps:
-        # Récupérer le code
-        - name: Checkout repository
-          uses: actions/checkout@v3
-  
-        # Se connecter à la registry ACR
-        - name: Log in to ACR
-          uses: azure/docker-login@v1
-          with:
-            login-server: ${{ env.REGISTRY }}
-            username: ${{ secrets.ACR_USERNAME }}
-            password: ${{ secrets.ACR_PASSWORD }}
-  
-        # Build de l'image Docker
-        - name: Build Docker image
-          run: |
-            docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ./backend
-  
-        # Pousser l'image Docker vers le registry
-        - name: Push Docker image
-          run: |
-            docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to ACR
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ env.REGISTRY }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} ./backend
+
+      - name: Push Docker image
+        run: |
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
