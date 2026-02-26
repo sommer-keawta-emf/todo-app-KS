@@ -11,4 +11,4 @@ COPY . .
 # Exposer le port utilisé par l'application
 EXPOSE 8080
 # Démarrer l'application
-CMD [ "npm", "start" ]
+CMD [ "npm", "starT" ]
